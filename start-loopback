@@ -1,0 +1,75 @@
+#!/bin/bash
+
+declare -a ips
+# Load file into array.
+readarray ips < ./tunnel-list
+
+rloip="192.168.1."
+# IP address of wlan0
+myip=$(ifconfig wlan0 2>/dev/null|awk '/inet addr:/ {print $2}'|sed 's/addr://')
+
+count=0;
+for index in ${!ips[@]}; do
+ tmp=$(echo ${ips[$index]}|tr -d '\n')
+ ips[$index]=$tmp
+ if [ -z "$tmp" ]
+  then
+   array=(${ips[@]/$ips[$index]})
+  else   
+   ((count++))
+ fi
+ if test "$tmp" = "$myip"
+  then
+   myiploc=$((index + 1)) 
+ fi 
+done
+
+ip tuntap add tun1 mode tun
+ifconfig tun1 192.168.1.$myiploc netmask 255.255.255.0
+#ifconfig tun1 mtu 1448 
+ifconfig tun1 up
+ip tuntap add tun0 mode tun
+#ifconfig tun0 mtu 1448
+#ifconfig tun0 192.168.1.$myiploc netmask 255.255.255.0
+ifconfig tun0 up
+
+#enable IP Forwarding
+echo "1" >/proc/sys/net/ipv4/conf/tun0/forwarding
+#echo "1" >/proc/sys/net/ipv4/conf/wlan0/forwarding
+echo "1" >/proc/sys/net/ipv4/conf/tun0/accept_local
+
+
+#NAT
+#sudo iptables -t nat -A POSTROUTING -j SNAT -d 192.168.1.0/28  -o tun1 --to-source 192.168.1.200  
+#sudo iptables -t nat -A POSTROUTING -j SNAT -d 192.168.1.0/28  -o wlan0 --to-source 192.168.1.$myiploc
+
+#Policy Routing
+#ip route add 192.168.1.0/28  dev tun1
+ip route add 192.168.1.0/28 via 10.10.10.1 dev wlan0 table custom
+ip rule add from 192.168.1.$myiploc iif tun0 table custom 
+
+
+./CreateLoopback -i tun1 -s -u &
+
+#i=0
+#while [ "$i" -lt "$srvsocks" ]
+# do
+#  ip tuntap add tun$((myiploc+i+1)) mode tun
+#  ifconfig tun$((myiploc+i+1)) up
+#  ifconfig tun$((myiploc+i+1)) mtu 1448
+#  ip route add $rloip$((myiploc+i+1))/32  dev tun$((myiploc+i+1))
+#  ./CreateTunnel -i tun$((myiploc+i+1)) -s -p $((myiploc+i+1))$((5670+myiploc)) -u &
+# ((i++)) 
+#done
+#
+#i=0
+#while [ "$i" -lt "$clsocks" ]
+# do
+#  ip tuntap add tun$((myiploc-i-1)) mode tun
+#  ifconfig tun$((myiploc-i-1)) up
+#  ifconfig tun$((myiploc-i-1)) mtu 1448
+#  ip route add $rloip$((myiploc-i-1))/32  dev tun$((myiploc-i-1))
+#  ./CreateTunnel -i tun$((myiploc-i-1)) -c ${ips[$((myiploc-i-2))]} -p $((myiploc))$((5670+myiploc-i-1)) -u &
+# ((i++)) 
+#done
+

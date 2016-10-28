@@ -1,0 +1,35 @@
+#!/bin/bash
+
+declare -a if
+
+# kill loopback's processes
+pkill CreateLoopback
+echo "killed CreateLoopback processes"
+
+#remove first 2 NATiniptables
+#iptables -t nat -D POSTROUTING 1
+#iptables -t nat -D POSTROUTING 1
+#echo "removed NAT"
+
+
+#Stop IP forwarding
+echo "0" >/proc/sys/net/ipv4/conf/tun0/forwarding
+#echo "0" >/proc/sys/net/ipv4/conf/wlan0/forwarding
+echo "Disabled IP_Fowarding on tuntap and wlan"
+
+#remove routes
+ip route del 192.168.1.0/28 via 10.10.10.1 dev wlan0 table custom
+ip rule del iif tun0 table custom 
+echo "Removed Routes+rules"
+
+# Get all tunnel interfaces put into an array
+ifs=$(ls -A /sys/class/net|grep tun)
+IFS=$'\t\n' 
+if=($ifs)
+
+# Delete all tunnels
+for index in ${!if[@]}
+ do
+  ip tuntap del ${if[$index]} mode tun
+  echo "stopped tunnel ${if[$index]}"
+done
