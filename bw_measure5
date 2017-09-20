@@ -1,0 +1,35 @@
+#!/bin/bash
+ssh node3 iperf3 -s -D ;
+#sleep 2
+iperf3 -c  node3 ;
+ssh node3 pkill iperf3;
+
+ssh node4 iperf3 -s -D ;
+#sleep 2
+iperf3 -c  node4 ;
+ssh node4 pkill iperf3;
+
+ssh node2 iperf3 -s -D ;
+#sleep 2
+iperf3 -c  node2 ;
+ssh node2 pkill iperf3;
+
+ssh node6 iperf3 -s -D ;
+#sleep 2
+iperf3 -c  node6 ;
+ssh node6 pkill iperf3;
+
+ssh node7 iperf3 -s -D ;
+#sleep 2
+iperf3 -c  node7 ;
+ssh node7 pkill iperf3;
+
+ssh node8 iperf3 -s -D ;
+#sleep 2
+iperf3 -c  node8 ;
+ssh node8 pkill iperf3;
+
+ssh node9 iperf3 -s -D ;
+#sleep 2
+iperf3 -c  node9 ;
+ssh node9 pkill iperf3;

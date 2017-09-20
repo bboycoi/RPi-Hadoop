@@ -1,0 +1,10 @@
+#!/bin/bash
+
+scp $1 packet_rate CreateLoopbackCS1Q CreateLoopbackMS monitor.h extern.c hd@10.0.0.101:/home/hd/network/
+scp $1 packet_rate CreateLoopbackCS1Q CreateLoopbackMS monitor.h extern.c hd@10.0.0.102:/home/hd/network/
+scp $1 packet_rate CreateLoopbackCS1Q CreateLoopbackMS monitor.h extern.c hd@10.0.0.103:/home/hd/network/
+scp $1 packet_rate CreateLoopbackCS1Q CreateLoopbackMS monitor.h extern.c hd@10.0.0.104:/home/hd/network/
+scp $1 packet_rate CreateLoopbackCS1Q CreateLoopbackMS monitor.h extern.c hd@10.0.0.106:/home/hd/network/
+scp $1 packet_rate CreateLoopbackCS1Q CreateLoopbackMS monitor.h extern.c hd@10.0.0.107:/home/hd/network/
+scp $1 packet_rate CreateLoopbackCS1Q CreateLoopbackMS monitor.h extern.c hd@10.0.0.108:/home/hd/network/
+scp $1 packet_rate CreateLoopbackCS1Q CreateLoopbackMS monitor.h extern.c hd@10.0.0.109:/home/hd/network/
